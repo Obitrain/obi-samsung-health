@@ -76,6 +76,8 @@ jobs:
       - name: Publish to npm
         env:
           VERSION: ${{ steps.v.outputs.version }}
+          # first release only: trusted publishing needs the package to exist; delete the secret afterwards
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           if npm view "@obitrain/react-native-samsung-health@$VERSION" version >/dev/null 2>&1; then
             echo "$VERSION already on npm, skipping"
