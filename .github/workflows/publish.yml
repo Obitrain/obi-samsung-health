@@ -73,16 +73,25 @@ jobs:
           yarn nitrogen
           yarn prepare
 
+      # npm stage publish (new-package support) needs a recent CLI
+      - name: Update npm
+        run: npm install -g npm@^11.21.1
+
       - name: Publish to npm
         env:
+          PACKAGE: '@obitrain/react-native-samsung-health'
           VERSION: ${{ steps.v.outputs.version }}
-          # first release only: trusted publishing needs the package to exist; delete the secret afterwards
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # only used to create the package (granular token WITHOUT 2FA bypass); delete it afterwards
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_STAGE_TOKEN }}
         run: |
-          if npm view "@obitrain/react-native-samsung-health@$VERSION" version >/dev/null 2>&1; then
+          if npm view "$PACKAGE@$VERSION" version >/dev/null 2>&1; then
             echo "$VERSION already on npm, skipping"
-          else
+          elif npm view "$PACKAGE" name >/dev/null 2>&1; then
             npm publish --provenance
+          else
+            # trusted publishing can't create a package: stage it, a maintainer approves with 2FA
+            npm stage publish --provenance --access public
+            echo "::notice::Staged $PACKAGE@$VERSION. Approve it with 'npm stage approve <stage-id>' (npm stage list $PACKAGE), then add the trusted publisher and delete NPM_STAGE_TOKEN."
           fi
 
       - name: Tag and GitHub release
