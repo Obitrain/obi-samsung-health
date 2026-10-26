@@ -1,0 +1,111 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  merge_group:
+    types:
+      - checks_requested
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Generated Nitro code must be committed and current
+        run: yarn nitrogen && git diff --exit-code -- nitrogen && test -z "$(git status --porcelain nitrogen)"
+
+      - name: Lint files
+        run: yarn lint
+
+      - name: Typecheck files
+        run: yarn typecheck
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Run unit tests
+        run: yarn test --maxWorkers=2
+
+      - name: Test config plugins
+        run: yarn example test:plugins
+
+  build-library:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build package
+        run: yarn prepare
+
+      - name: Export example bundle
+        run: yarn example export
+
+  build-android:
+    runs-on: ubuntu-latest
+    env:
+      CI: '1'
+      # private download URL of the Samsung Health Data SDK aar; the job is a no-op without it (forks)
+      SAMSUNG_HEALTH_SDK_AAR_URL: ${{ secrets.SAMSUNG_HEALTH_SDK_AAR_URL }}
+    steps:
+      - name: Checkout
+        if: env.SAMSUNG_HEALTH_SDK_AAR_URL != ''
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup
+        if: env.SAMSUNG_HEALTH_SDK_AAR_URL != ''
+        uses: ./.github/actions/setup
+
+      - name: Install Samsung Health Data SDK
+        if: env.SAMSUNG_HEALTH_SDK_AAR_URL != ''
+        run: curl -fsSL "$SAMSUNG_HEALTH_SDK_AAR_URL" -o libs/samsung-health-data-api.aar
+
+      - name: Install JDK
+        if: env.SAMSUNG_HEALTH_SDK_AAR_URL != ''
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: zulu
+          java-version: '17'
+
+      - name: Cache Gradle
+        if: env.SAMSUNG_HEALTH_SDK_AAR_URL != ''
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.gradle/wrapper
+            ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('yarn.lock', 'android/build.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Generate Android project
+        if: env.SAMSUNG_HEALTH_SDK_AAR_URL != ''
+        run: yarn example prebuild --clean --no-install --platform android
+
+      - name: Build Android example
+        if: env.SAMSUNG_HEALTH_SDK_AAR_URL != ''
+        env:
+          GRADLE_OPTS: '-Dorg.gradle.jvmargs=-Xmx6g'
+        run: yarn example build:android

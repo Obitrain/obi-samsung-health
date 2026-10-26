@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "SamsungHealthExample",
+    "slug": "obi-samsung-health-example",
+    "version": "1.0.0",
+    "platforms": ["android"],
+    "android": {
+      "package": "com.obitrain.samsunghealth.example",
+      "allowBackup": false
+    },
+    "plugins": ["expo-dev-client", "./plugins/with-samsung-health-sdk"]
+  }
+}

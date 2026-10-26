@@ -1,0 +1,125 @@
+ext.SamsungHealth = [
+  minSdkVersion: 24,
+  compileSdkVersion: 36
+]
+
+ext.getExtOrDefault = { prop ->
+  if (rootProject.ext.has(prop)) {
+    return rootProject.ext.get(prop)
+  }
+
+  return SamsungHealth[prop]
+}
+
+def reactNativeArchitectures() {
+  def value = rootProject.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
+// The Samsung Health Data SDK is not on Maven and can't be redistributed: the app ships it,
+// this library only compiles against it.
+def samsungHealthSdkAar() {
+  def explicit = rootProject.findProperty("samsungHealthSdkAar")
+  if (explicit) {
+    def file = rootProject.file(explicit)
+    if (!file.exists()) throw new GradleException("samsungHealthSdkAar not found: ${file}")
+    return file
+  }
+  def candidates = rootProject.fileTree(dir: "app/libs", include: "*health-data-api*.aar").files
+  if (candidates.isEmpty()) {
+    throw new GradleException(
+      "Samsung Health Data SDK aar not found in ${rootProject.file('app/libs')}. " +
+        "Download it from https://developer.samsung.com/health/data/process.html, " +
+        "or set -PsamsungHealthSdkAar=<path>."
+    )
+  }
+  return candidates.sort { it.name }.last()
+}
+
+apply plugin: "com.android.library"
+
+if (project.extensions.findByName("kotlin") == null) {
+  apply plugin: "kotlin-android"
+}
+
+apply from: '../nitrogen/generated/android/obitrain_samsunghealth+autolinking.gradle'
+
+apply plugin: "com.facebook.react"
+
+android {
+  namespace "com.margelo.nitro.obitrain.samsunghealth"
+
+  compileSdkVersion getExtOrDefault("compileSdkVersion")
+
+  defaultConfig {
+    minSdkVersion getExtOrDefault("minSdkVersion")
+
+    externalNativeBuild {
+      cmake {
+        cppFlags "-frtti -fexceptions -Wall -fstack-protector-all"
+        arguments "-DANDROID_STL=c++_shared", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+        abiFilters (*reactNativeArchitectures())
+
+        buildTypes {
+          debug {
+            cppFlags "-O1 -g"
+          }
+          release {
+            cppFlags "-O2"
+          }
+        }
+      }
+    }
+  }
+
+  if (rootProject.ext.has("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
+  }
+
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
+  }
+
+  packaging {
+    resources {
+      excludes += [
+        "META-INF",
+        "META-INF/**"
+      ]
+    }
+
+    jniLibs {
+      excludes += [
+        "**/libc++_shared.so",
+        "**/libfbjni.so",
+        "**/libjsi.so",
+        "**/libfolly_json.so",
+        "**/libfolly_runtime.so",
+        "**/libglog.so",
+        "**/libhermes.so",
+        "**/libreactnative.so"
+      ]
+    }
+  }
+
+  buildFeatures {
+    prefab true
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+}
+
+dependencies {
+  implementation "com.facebook.react:react-android"
+  implementation project(":react-native-nitro-modules")
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2"
+  compileOnly files(samsungHealthSdkAar())
+  // runtime deps of the SDK aar (it ships no pom)
+  implementation "com.google.code.gson:gson:2.13.2"
+  implementation "org.jetbrains.kotlin:kotlin-parcelize-runtime:${org.jetbrains.kotlin.config.KotlinCompilerVersion.VERSION}"
+}

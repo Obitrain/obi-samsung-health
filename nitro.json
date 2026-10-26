@@ -1,0 +1,19 @@
+{
+  "cxxNamespace": ["obitrain_samsunghealth"],
+  "ios": {
+    "iosModuleName": "SamsungHealth"
+  },
+  "android": {
+    "androidNamespace": ["obitrain", "samsunghealth"],
+    "androidCxxLibName": "obitrain_samsunghealth"
+  },
+  "autolinking": {
+    "SamsungHealth": {
+      "android": {
+        "language": "kotlin",
+        "implementationClassName": "SamsungHealth"
+      }
+    }
+  },
+  "ignorePaths": ["node_modules"]
+}
