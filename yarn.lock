@@ -2703,9 +2703,9 @@ __metadata:
     "@babel/core": "npm:^7.29.7"
     "@babel/runtime": "npm:^7.29.10"
     "@types/react": "npm:^19.2.0"
-    babel-preset-expo: "npm:~58.0.21"
-    expo: "npm:~58.0.20"
-    expo-dev-client: "npm:~58.0.16"
+    babel-preset-expo: "npm:~58.0.22"
+    expo: "npm:~58.0.21"
+    expo-dev-client: "npm:~58.0.17"
     react: "npm:19.3.0"
     react-native: "npm:0.88.1"
     react-native-builder-bob: "npm:^0.44.1"
@@ -3915,7 +3915,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-preset-expo@npm:~58.0.21, babel-preset-expo@npm:~58.0.22":
+"babel-preset-expo@npm:~58.0.22":
   version: 58.0.22
   resolution: "babel-preset-expo@npm:58.0.22"
   dependencies:
@@ -5336,7 +5336,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-dev-client@npm:~58.0.16":
+"expo-dev-client@npm:~58.0.17":
   version: 58.0.17
   resolution: "expo-dev-client@npm:58.0.17"
   dependencies:
@@ -5526,7 +5526,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo@npm:~58.0.20":
+"expo@npm:~58.0.21":
   version: 58.0.21
   resolution: "expo@npm:58.0.21"
   dependencies:
