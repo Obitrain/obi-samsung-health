@@ -15,7 +15,7 @@
     "expo-dev-client": "~58.0.18",
     "react": "19.3.0",
     "react-native": "0.88.1",
-    "react-native-nitro-modules": "0.37.1"
+    "react-native-nitro-modules": "0.37.2"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
