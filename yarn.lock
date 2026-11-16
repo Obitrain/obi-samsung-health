@@ -1614,10 +1614,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.29.13":
-  version: 7.29.13
-  resolution: "@babel/runtime@npm:7.29.13"
-  checksum: 10c0/6e589f63a3f9192bc8de99a5bc02ff14daf14590e8de77c0f3487f4b7c3784181c60dfad927986d232fbf5581723bb577aae704b42ec14c8c44ad05b590b96d6
+"@babel/runtime@npm:^7.29.14":
+  version: 7.29.14
+  resolution: "@babel/runtime@npm:7.29.14"
+  checksum: 10c0/dd809ac74c2154a549c9a9fbe73a3da84927c987d1291a1f1618f9263fa372a0de0d575c2616b3b420586a9974114c81ee47953c5d25074da66b58bf9d33d870
   languageName: node
   linkType: hard
 
@@ -2806,7 +2806,7 @@ __metadata:
   resolution: "@obitrain/react-native-samsung-health-example@workspace:example"
   dependencies:
     "@babel/core": "npm:^7.29.13"
-    "@babel/runtime": "npm:^7.29.13"
+    "@babel/runtime": "npm:^7.29.14"
     "@types/react": "npm:^19.2.0"
     babel-preset-expo: "npm:~58.0.24"
     expo: "npm:~58.0.23"
@@ -2839,7 +2839,7 @@ __metadata:
     eslint-plugin-prettier: "npm:^5.5.7"
     jest: "npm:^29.7.0"
     nitrogen: "npm:0.37.1"
-    prettier: "npm:^3.9.10"
+    prettier: "npm:^3.10.1"
     react: "npm:19.3.0"
     react-native: "npm:0.88.0"
     react-native-builder-bob: "npm:^0.44.1"
@@ -8620,12 +8620,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.9.10":
-  version: 3.9.10
-  resolution: "prettier@npm:3.9.10"
+"prettier@npm:^3.10.1":
+  version: 3.10.1
+  resolution: "prettier@npm:3.10.1"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10c0/0b3531593aa6fb36ac6baf629cb058bda472c59a6938774f931fe55283a07c62e6f56e621b043a82d8a3e21fc284c08c34f9e539fc70072635f79b7bae1a1067
+  checksum: 10c0/e8c03ea575a30e15afa75a3700e94609050502980d7c906374aea4cf623eef4dce0816100126207e675cc1ed54b7dfce60f02dbee8d61ec27dc69ce5df6c3723
   languageName: node
   linkType: hard
 
